@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html>
+  <title>Active Major Construction</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+  <link rel="icon" href="https://nycdob.github.io/ActiveNB_A1enlargements/data/iconlogo.png">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://nycdob.github.io/ActiveNB_A1enlargements/keen/keen-dashboards.css" />
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css' rel='stylesheet' type='text/css'/>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link href="https://nycdob.github.io/ActiveNB_A1enlargements/build/nv.d3.css" rel="stylesheet" type="text/css">
+  <style>
+
+.row{
+	padding-top: 50px;
+}
+body {
+	background-color: white;
+}
+.jobno{
+	margin-left: 20px;
+}
+#map {
+	height: 100%;
+	width: 100%;
+	pointer-events: all;
+}
+#table-container{
+	height: 890px;
+	width: 100%;
+	display: block;
+	background-color: white;
+}
+#img{
+	float: left;
+	height: 35px;
+	margin-left: 10px;
+	padding-right: 10px;
+}
+
+.logo{
+	background-image: url('https://raw.githubusercontent.com/NYCDOB/CommunityProfiles_v2/gh-pages/dob_logo_white_transparent.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	float: right;
+	background-size: 80px;
+	height: 50px;
+	width: 110px;	  
+}
+.pointSQFT{
+	fill: #009fff;
+	fill-opacity: .5;
+	stroke: #fff;
+	
+}
+.pointDwell{
+	fill: #FF7F01;
+	fill-opacity: .5;
+	stroke: #fff;
+	
+}
+.pointCost{
+	fill: #f44336;
+	fill-opacity: .5;
+	stroke: #fff;
+	
+}
+.pointStories{
+	fill: #66A61E;
+	fill-opacity: .5;
+	stroke: #fff;
+	
+}
+.tooltipBox {
+    z-index: 500;
+	visibility: hidden;
+    color:black;
+	background: #fff;
+	border-radius: 3px; 
+	opacity: 0.9; 
+	position: absolute;
+    border: 1px solid #707070;
+	bottom: 5px;
+	width: 30em;
+	font-size:1.1em;
+	left:5px;
+	display:flex;
+	max-height:50%;
+	flex-direction: column;	
+}
+
+@media( max-width:1200px){
+	.dobmain	{
+		padding-top:50px;
+	}
+	.legendSQFT {
+		visibility:hidden;
+	}
+	.legendPropDwell {
+		visibility:hidden;
+	}
+	.legendCost {
+		visibility:hidden;
+	}
+	.legendStories {
+		visibility:hidden;
+	}
+	.ui {
+		margin-top: -150px;
+	}
+}
+
+@media ( max-width:2100px){
+	.summarytxt_sqft {
+		font-size: 18px !important;
+	}
+	#summary1_sqft {
+		font-size: 40px !important;
+	}
+	.summarytxt_propdwell {
+		font-size: 18px !important;
+	}
+	#summary1_propdwell {
+		font-size: 40px !important;
+	}
+	.summarytxt_estcost {
+		font-size: 18px !important;
+	}
+	#summary1_estcost {
+		font-size: 40px !important;
+	}	
+	.summarytxt_stories {
+		font-size: 18px !important;
+	}
+	#summary1_stories {
+		font-size: 40px !important;
+	}
+	.summarytxt {
+		font-size: 18px !important;
+	}
+}
+svg {
+	display: block;
+}
+
+#chart-01{
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+    float: left;
+	background-color: #c7c7c7;
+}
+#chart-boro-sqft{
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+    float: left;
+	background-color: #c7c7c7;
+	margin-bottom: 10px;
+}
+#borosqft{
+	margin-top: 10px;
+	padding: 0px;
+	height: 225px;
+	width: 100%;
+	background-color: #fff;
+}
+#chart-boro-propDwell{
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+    float: left;
+	background-color: #c7c7c7;
+	margin-bottom: 10px;
+	display: none;
+}
+#chart-boro-estCost{
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+    float: left;
+	background-color: #c7c7c7;
+	margin-bottom: 10px;
+	display: none;
+}
+#chart-boro-stories{
+    box-sizing: border-box;
+    width: 100%;
+	height: 100%;
+    float: left;
+	background-color: #c7c7c7;
+	margin-bottom: 10px;
+	display: none;
+}
+#boropropdwell{
+	margin-top: 10px;
+	padding: 0px;
+	height: 225px;
+	width: 100%;
+	background-color: #fff;
+}
+#boroestcost{
+	margin-top: 10px;
+	padding: 0px;
+	height: 225px;
+	width: 100%;
+	background-color: #fff;
+}
+#borostories{
+	margin-top: 10px;
+	padding: 0px;
+	height: 225px;
+	width: 100%;
+	background-color: #fff;
+}
+#cdsqft{
+	margin-top: 10px;
+	padding: 0px;
+	height: 190px;
+	width: 100%;
+	background-color: #fff;
+}
+#cdpropdwell{
+	margin-top: 10px;
+	padding: 0px;
+	height: 190px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#cdestcost{
+	margin-top: 10px;
+	padding: 0px;
+	height: 190px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#cdstories{
+	margin-top: 10px;
+	padding: 0px;
+	height: 190px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#jobsqft{
+	margin-top: 10px;
+	padding: 0px;
+	height: 170px;
+	width: 100%;
+	background-color: #fff;
+}
+#jobdwell{
+	margin-top: 10px;
+	padding: 0px;
+	height: 170px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#jobestcost{
+	margin-top: 10px;
+	padding: 0px;
+	height: 170px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#jobstories{
+	margin-top: 10px;
+	padding: 0px;
+	height: 170px;
+	width: 100%;
+	background-color: #fff;
+	display: none;
+}
+#chart-cd{
+    box-sizing: border-box;
+    width: 100%;
+	height: 250px;
+    float: left;
+	background-color: #c7c7c7;
+}
+
+#chart-04{
+    box-sizing: border-box;
+    width: 100%;
+	height: 250px;
+    float: left;
+	background-color: #c7c7c7;
+}
+.summarytxt{
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	line-height: 97%;
+	padding-top: 10px;
+}
+.summarytxt_sqft{
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	line-height: 97%;
+	padding-top: 10px;
+}
+.summarytxt_propdwell{
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	line-height: 97%;
+	padding-top: 10px;
+	display: none;
+}
+.summarytxt_estcost{
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	line-height: 97%;
+	padding-top: 10px;
+	display: none;
+}
+.summarytxt_stories{
+	font-size: 28px;
+	font-weight: bold;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+	line-height: 97%;
+	padding-top: 10px;
+	display: none;
+}
+.subtxt{
+	font-size: 15px;
+	font-style: italic;
+	color: #FFFFFF;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;
+	text-align: center;
+}
+#summary1_sqft{
+	font-size: 50px;
+	font-weight: bold;
+	color: #009fff;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;	
+	text-align: center;
+	line-height: 150%;
+	
+}
+#summary1_propdwell{
+	font-size: 50px;
+	font-weight: bold;
+	color: #FF7F01;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;	
+	text-align: center;
+	line-height: 150%;
+	
+}
+#summary1_estcost{
+	font-size: 50px;
+	font-weight: bold;
+	color: #f44336;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;	
+	text-align: center;
+	line-height: 150%;
+	
+}
+#summary1_stories{
+	font-size: 50px;
+	font-weight: bold;
+	color: #66A61E;
+	font-family: 'Open Sans', sans-serif;
+	font-family: 'Roboto', sans-serif;	
+	text-align: center;
+	line-height: 150%;
+	
+}
+.nv-x text{
+	margin-top: 50px;
+	font-size: 10px;
+	fill: #009fff;
+}
+.legendSQFT {
+		padding: 6px 10px;
+		font: 14px/16px Arial, Helvetica, sans-serif;
+		background: white;
+		background: rgba(255,255,255,0.8);
+		border: 2px solid #707070;
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 7px;
+		width: 140px;
+
+}
+#legendTitleSQFT {
+		text-align: center;
+		margin-bottom: 15px;
+		font-variant: small-caps;
+		font-size: 15px;
+		font-weight: bold;
+}
+.symbolsContainerSQFT {
+		float: left;
+		margin-left: 50px;
+}
+.legendCircleSQFT {
+		border-radius: 50%;
+		border: 1px solid #fff;
+		background: rgba(0, 159, 255, .4);
+		display: inline-block;
+}
+.legendValueSQFT {
+		position: absolute;	
+		right: 8px;
+}
+.legendPropDwell {
+		padding: 6px 10px;
+		font: 14px/16px Arial, Helvetica, sans-serif;
+		background: white;
+		background: rgba(255,255,255,0.8);
+		border: 2px solid #707070;
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 7px;
+		width: 140px;
+
+}
+#legendTitlePropDwell {
+		text-align: center;
+		margin-bottom: 15px;
+		font-variant: small-caps;
+		font-size: 15px;
+		font-weight: bold;
+}
+.symbolsContainerPropDwell {
+		float: left;
+		margin-left: 50px;
+}
+.legendCirclePropDwell {
+		border-radius: 50%;
+		border: 1px solid #fff;
+		background: rgba(255, 127, 1, .4);
+		display: inline-block;
+}
+.legendValuePropDwell {
+		position: absolute;	
+		right: 8px;
+}
+.legendCost {
+		padding: 6px 10px;
+		font: 14px/16px Arial, Helvetica, sans-serif;
+		background: white;
+		background: rgba(255,255,255,0.8);
+		border: 2px solid #707070;
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 7px;
+		width: 150px;
+
+}
+#legendTitleCost {
+		text-align: center;
+		margin-bottom: 15px;
+		font-variant: small-caps;
+		font-size: 15px;
+		font-weight: bold;
+}
+.symbolsContainerCost {
+		float: left;
+		margin-left: 50px;
+}
+.legendCircleCost {
+		border-radius: 50%;
+		border: 1px solid #fff;
+		background: rgba(244, 67, 54, .4);
+		display: inline-block;
+}
+.legendValueCost {
+		position: absolute;	
+		right: 8px;
+}
+.legendStories {
+		padding: 6px 10px;
+		font: 14px/16px Arial, Helvetica, sans-serif;
+		background: white;
+		background: rgba(255,255,255,0.8);
+		border: 2px solid #707070;
+		box-shadow: 0 0 15px rgba(0,0,0,0.2);
+		border-radius: 7px;
+		width: 140px;
+
+}
+#legendTitleStories {
+		text-align: center;
+		margin-bottom: 15px;
+		font-variant: small-caps;
+		font-size: 15px;
+		font-weight: bold;
+}
+.symbolsContainerStories {
+		float: left;
+		margin-left: 50px;
+}
+.legendCircleStories {
+		border-radius: 50%;
+		border: 1px solid #fff;
+		background: rgba(102, 166, 30, .4);
+		display: inline-block;
+}
+.legendValueStories {
+		position: absolute;	
+		right: 8px;
+}
+.ui {
+	top: 225px;
+	left: 12px;
+	padding: 8px;
+	position: absolute;
+	background: white;
+	background: rgba(255,255,255,0.8);
+	border: 2px solid #707070;
+	box-shadow: 0 0 15px rgba(0,0,0,0.2);
+	border-radius: 7px;
+	width: 200px;
+}
+.form-check {
+	filter: grayscale(1);
+}
+._cycleD {
+padding: 2px 10px 10px;
+overflow-y:auto;
+}
+._cycleD > div{
+display: flex;
+margin: 3px 0px;
+
+}
+._fM3_0 :nth-child(1){
+flex:5;
+}
+._fM3_0 :nth-child(2){
+flex:4;
+}
+._b {
+font-weight:600;
+font-size: 1.2em;
+padding:10px;
+margin:0px;
+}
+._cor{
+color:white;display:none;
+}
+._nav{
+flex:1;
+}
+._tD{
+background-color: #969696 ;/*rgb(43, 119, 241);*/
+color: white;
+display:flex;
+padding:0 10px;
+}
+._tD div {
+align-self:center;
+}
+._tD :nth-child(2) {
+flex:1;
+}
+._pr, ._nx,._cl {
+font-size:1.2em;
+cursor:pointer;
+}
+._cl{
+float:right;
+}
+a.ndec{
+text-decoration: none;
+}
+.material-symbols-outlined {
+font-variation-settings:
+'FILL' 0,
+'wght' 110,
+'GRAD' -25,
+'opsz' 10;
+font-size: 12px;
+}
+</style>
+<body>
+<div class="container">
+			<div class="navbar navbar-fixed-top" role="navigation" style="color:white;background-color:RGB(61,74,87);">
+			<a class="logo" href="https://www1.nyc.gov/site/buildings/index.page" target="_blank"> </a>
+				<div class="nav navbar-nav" style="margin-left:15px;margin-top:10px;font-size:26px;font-weight:bold;text-align:center;">
+					ACTIVE MAJOR CONSTRUCTION
+				</div>
+			</div>
+</div>
+<div class="container-fluid dobmain" style="margin-top:20px;">
+	<div class="row">
+		  <div class="col-lg-9" style="height:89vh">
+			  <div class="chart-stage" id="map-container" style="border:1px solid black;height:100%;width:100%">
+				<div id="map">
+				<svg></svg>
+					<div id="ui-container" class="ui" style="z-index: 401">
+					  <form id="radioBox">
+						<div>
+						  <div class="form-check">
+							<input type="radio" class="form-check-input" name="o" value="sqft" id="sqft" checked>
+							<label class="form-check-label" for="sqft">Square Footage</label>
+						  </div>
+						  <div class="form-check">
+							<input type="radio" class="form-check-input" name="o" value="dwell" id="dwell">
+							<label class="form-check-label" for="dwell">Proposed Dwelling Units</label>
+						  </div>
+						  <div class="form-check">
+							<input type="radio" name="o" value="cost" id="cost" class="form-check-input">
+							<label class="form-check-label" for="cost">Estimated Cost</label>
+						  </div>
+						  <div class="form-check">
+							<input type="radio" name="o" value="stories" id="stories" class="form-check-input">
+							<label class="form-check-label" for="stories">Proposed Stories</label>
+						  </div>
+						</div>
+					  </form>	
+					</div>
+				</div>
+			  </div>
+		  </div>
+			  <div class="col-lg-3" style="height:100%">
+				<div class="newchart" style="padding:5px 5px 0px 5px;border:1px solid black;height:89vh;width:100%;">
+					<div class="chart-wrapper">
+					  <div class="chart-stage" id="chart-01">
+						<div class="summarytxt_sqft" >TOTAL CITYWIDE </br>SQUARE FOOTAGE: </br>
+							<span id="summary1_sqft"></span>
+						</div>
+						<div class="summarytxt_propdwell" >TOTAL CITYWIDE </br>PROPOSED DWELLING UNITS: </br>
+							<span id="summary1_propdwell"></span>
+						</div>
+						<div class="summarytxt_estcost" >TOTAL CITYWIDE </br>ESTIMATED COST ($): </br>
+							<span id="summary1_estcost"></span>
+						</div>
+						<div class="summarytxt_stories" >TOTAL CITYWIDE </br>PROPOSED STORIES: </br>
+							<span id="summary1_stories"></span>
+						</div>
+					  </div>
+					</div>
+					<div class="chart-wrapper">
+					  <div class="chart-stage" id="chart-boro-sqft">
+						<svg id="borosqft"></svg>
+					  </div>
+					  <div class="chart-stage" id="chart-boro-propDwell">
+						<svg id="boropropdwell"></svg>
+					  </div>
+					  <div class="chart-stage" id="chart-boro-estCost">
+						<svg id="boroestcost"></svg>
+					  </div>
+					  <div class="chart-stage" id="chart-boro-stories">
+						<svg id="borostories"></svg>
+					  </div>
+					</div>
+					<div class="chart-wrapper">
+					  <div class="chart-stage" id="chart-cd">
+						<div class="summarytxt" >TOP 5 COMMUNITY DISTRICTS </br><span id="summary3"></span></div>
+						<svg id="cdsqft"></svg>
+						<svg id="cdpropdwell"></svg>
+						<svg id="cdestcost"></svg>
+						<svg id="cdstories"></svg>
+					  </div>
+					</div>
+					<div class="chart-wrapper">
+					  <div class="chart-stage" id="chart-04">
+						<div class="summarytxt" >TOP 5 JOB SITES </br><span id="summary4"></span></div>
+						<div class="subtxt">(Click on Address to Highlight & Zoom to the Location)</div>
+						<svg id="jobsqft"></svg>
+						<svg id="jobdwell"></svg>
+						<svg id="jobestcost"></svg>
+						<svg id="jobstories"></svg>
+					  </div>
+					</div>
+				</div>
+			  </div>
+	</div>
+	<p class="small text-muted" style=" position:relative; bottom:0px;">Built by DOB Analytics <a href="https://www1.nyc.gov/site/buildings/dob/analytics-reports.page" target="_blank">Dev Squad</a> | <a id="dlData" href="no-script.html">Download Data (csv)</a></p>	
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-format@3"></script>
+<script src="https://nycdob.github.io/EssentialActiveConstruction/Leaflet.D3SvgOverlay-master/L.D3SvgOverlay.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://nycdob.github.io/ActiveNB_A1enlargements/build/nv.d3.js"></script>
+<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+<script type="text/javascript" src="https://nycdob.github.io/ActiveNB_A1enlargements/keen/keen.min.js"></script>
+<script>
+
+$(document).ready(function(){
+	var today = new Date();
+	var dd = today.getDate();
+	var mm = today.getMonth()+1;
+	var yyyy = today.getFullYear();
+	today = mm + '/' + dd + '/' + yyyy;	
+	d3.select("#today").html(today);
+	var latlong = [];
+	var selection = [];
+	var formatDate = d3.time.format("%-m/%-d/%Y").parse;
+	var numberFormat = d3.format(",.0f");
+	var legendNumFormat = d3.format(".2s");
+    L.Control.include({
+      _refocusOnMap: L.Util.falseFn // Do nothing.
+    });	
+var map = L.map('map').setView([40.713312, -73.977407], 14);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+
+var tooltipBox = d3.select('#map').append('div').attr('class', 'tooltipBox');
+
+var width = $("#map").width(),
+	height = $("#map").height(),
+	points = [],
+	table_map = [],
+	filteredData,
+	latLngs = [],
+	pointsOverlaySQFT,
+	pointsOverlayDwell,
+	pointsOverlayCost,
+	pointsOverlayStories,
+	legendSQFT,
+	legendPropDwell,
+	legendCost,
+	legendStories,
+	radius;
+	
+onload = ready();
+
+	
+function ready(){
+
+	var sqftRadio = document.querySelector('input[id="sqft"]');
+		dwellRadio = document.querySelector('input[id="dwell"]');
+		costRadio = document.querySelector('input[id="cost"]');
+		storiesRadio = document.querySelector('input[id="stories"]');
+		let _lObj={"Job Type":"Job Type","Job Number":"Job Number","BIN":"BIN Number","Address":"Job Location Street Name","Block":"Block","Lot":"Lot","Community District":"Community Board","Horizontal Enlargement":"Horizontal Enlargement Flag","Vertical Enlargement":"Vertical Enlargement Flag","Square Footage":"Total Construction Floor Area",  "Proposed Dwelling Units":"Proposed Dwelling Units","Proposed Stories":"Proposed Stories","Estimate Cost ($)":"Estimated Job Cost","Applicant Business Name":"Applicant Business Name","Permit Issuance Date":"Permit Issuance Date","Permit Expiration Date":"Permit Expiration Date",}
+	//document.querySelectorAll("input[type='radio']").forEach(x=>{x.addEventListener ('change',(e)=>{document.querySelector('.tooltipBox').style.visibility="hidden"})});
+
+
+	sqftRadio.onchange = function(){
+			if(this.checked){
+				d3.selectAll(".pointDwell").style("display", "none");
+				d3.selectAll(".pointCost").style("display", "none");
+				d3.selectAll(".pointStories").style("display", "none");
+				d3.selectAll(".pointSQFT").style("display", "block");	
+
+				d3.selectAll(".legendSQFT").style("display", "block");
+				d3.selectAll(".legendPropDwell").style("display", "none");
+				d3.selectAll(".legendCost").style("display", "none");
+				d3.selectAll(".legendStories").style("display", "none");
+				
+				d3.selectAll(".summarytxt_sqft").style("display", "block");
+				d3.selectAll(".summarytxt_propdwell").style("display", "none");
+				d3.selectAll(".summarytxt_estcost").style("display", "none");
+				d3.selectAll(".summarytxt_stories").style("display", "none");
+				
+				d3.selectAll("#chart-boro-sqft").style("display", "block");
+				d3.selectAll("#chart-boro-propDwell").style("display", "none");
+				d3.selectAll("#chart-boro-estCost").style("display", "none");
+				d3.selectAll("#chart-boro-stories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll("#cdsqft").style("display", "block");
+				d3.selectAll("#cdpropdwell").style("display", "none");
+				d3.selectAll("#cdestcost").style("display", "none");
+				d3.selectAll("#cdstories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll("#jobsqft").style("display", "block");
+				d3.selectAll("#jobdwell").style("display", "none");
+				d3.selectAll("#jobestcost").style("display", "none");
+				d3.selectAll("#jobstories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll(".pointDwell")
+					.classed("selected", function(d){
+						return false;
+					})
+					
+				d3.selectAll(".pointCost")
+					.classed("selected", function(d){
+						return false;
+					})
+
+				d3.selectAll(".pointStories")
+				.classed("selected", function(d){
+					return false;
+				})
+			}
+	};
+	
+	dwellRadio.onchange = function(){
+			if(this.checked){
+				d3.selectAll(".pointSQFT").style("display", "none");
+				d3.selectAll(".pointCost").style("display", "none");
+				d3.selectAll(".pointStories").style("display", "none");
+				d3.selectAll(".pointDwell").style("display", "block");	
+
+				d3.selectAll(".legendSQFT").style("display", "none");
+				d3.selectAll(".legendCost").style("display", "none");
+				d3.selectAll(".legendStories").style("display", "none");
+				d3.selectAll(".legendPropDwell").style("display", "block");		
+				
+				d3.selectAll(".summarytxt_sqft").style("display", "none");
+				d3.selectAll(".summarytxt_propdwell").style("display", "block");
+				d3.selectAll(".summarytxt_estcost").style("display", "none");
+				d3.selectAll(".summarytxt_stories").style("display", "none");
+
+				d3.selectAll("#chart-boro-sqft").style("display", "none");
+				d3.selectAll("#chart-boro-propDwell").style("display", "block");
+				d3.selectAll("#chart-boro-estCost").style("display", "none");
+				d3.selectAll("#chart-boro-stories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll("#cdsqft").style("display", "none");
+				d3.selectAll("#cdpropdwell").style("display", "block");
+				d3.selectAll("#cdestcost").style("display", "none");
+				d3.selectAll("#cdstories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll("#jobsqft").style("display", "none");
+				d3.selectAll("#jobdwell").style("display", "block");
+				d3.selectAll("#jobestcost").style("display", "none");
+				d3.selectAll("#jobstories").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+				
+				d3.selectAll(".pointSQFT")
+					.classed("selected", function(d){
+						return false;
+					})	
+
+				d3.selectAll(".pointCost")
+					.classed("selected", function(d){
+						return false;
+					})	
+				d3.selectAll(".pointStories")
+				.classed("selected", function(d){
+					return false;
+				})				
+			}
+	};	
+
+	costRadio.onchange = function(){
+			if(this.checked){
+				d3.selectAll(".pointSQFT").style("display", "none");
+				d3.selectAll(".pointCost").style("display", "block");
+				d3.selectAll(".pointDwell").style("display", "none");
+				d3.selectAll(".pointStories").style("display", "none");	
+
+				d3.selectAll(".legendSQFT").style("display", "none");
+				d3.selectAll(".legendCost").style("display", "block");
+				d3.selectAll(".legendPropDwell").style("display", "none");	
+				d3.selectAll(".legendStories").style("display", "none");
+
+				d3.selectAll(".summarytxt_sqft").style("display", "none");
+				d3.selectAll(".summarytxt_propdwell").style("display", "none");
+				d3.selectAll(".summarytxt_stories").style("display", "none");
+				d3.selectAll(".summarytxt_estcost").style("display", "block");	
+
+				d3.selectAll("#chart-boro-sqft").style("display", "none");
+				d3.selectAll("#chart-boro-propDwell").style("display", "none");
+				d3.selectAll("#chart-boro-stories").style("display", "none");
+				d3.selectAll("#chart-boro-estCost").style("display", "block");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV	
+
+				d3.selectAll("#cdsqft").style("display", "none");
+				d3.selectAll("#cdpropdwell").style("display", "none");
+				d3.selectAll("#cdstories").style("display", "none");
+				d3.selectAll("#cdestcost").style("display", "block");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+
+				d3.selectAll("#jobsqft").style("display", "none");
+				d3.selectAll("#jobdwell").style("display", "none");
+				d3.selectAll("#jobstories").style("display", "none");
+				d3.selectAll("#jobestcost").style("display", "block");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV	
+
+				d3.selectAll(".pointSQFT")
+					.classed("selected", function(d){
+						return false;
+					})	
+
+				d3.selectAll(".pointDwell")
+					.classed("selected", function(d){
+						return false;
+					})	
+				d3.selectAll(".pointStories")
+					.classed("selected", function(d){
+						return false;
+					})	
+					
+			}
+	};
+
+	storiesRadio.onchange = function(){
+			if(this.checked){
+				d3.selectAll(".pointSQFT").style("display", "none");
+				d3.selectAll(".pointCost").style("display", "none");
+				d3.selectAll(".pointDwell").style("display", "none");
+				d3.selectAll(".pointStories").style("display", "block");	
+
+				d3.selectAll(".legendSQFT").style("display", "none");
+				d3.selectAll(".legendCost").style("display", "none");
+				d3.selectAll(".legendPropDwell").style("display", "none");	
+				d3.selectAll(".legendStories").style("display", "block");
+
+				d3.selectAll(".summarytxt_sqft").style("display", "none");
+				d3.selectAll(".summarytxt_propdwell").style("display", "none");
+				d3.selectAll(".summarytxt_stories").style("display", "block");
+				d3.selectAll(".summarytxt_estcost").style("display", "none");	
+
+				d3.selectAll("#chart-boro-sqft").style("display", "none");
+				d3.selectAll("#chart-boro-propDwell").style("display", "none");
+				d3.selectAll("#chart-boro-stories").style("display", "block");
+				d3.selectAll("#chart-boro-estCost").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV	
+
+				d3.selectAll("#cdsqft").style("display", "none");
+				d3.selectAll("#cdpropdwell").style("display", "none");
+				d3.selectAll("#cdstories").style("display", "block");
+				d3.selectAll("#cdestcost").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV
+
+				d3.selectAll("#jobsqft").style("display", "none");
+				d3.selectAll("#jobdwell").style("display", "none");
+				d3.selectAll("#jobstories").style("display", "block");
+				d3.selectAll("#jobestcost").style("display", "none");
+				window.dispatchEvent(new Event('resize')); //ALLOW CHART TO FILL WIDTH OF DIV	
+
+				d3.selectAll(".pointSQFT")
+					.classed("selected", function(d){
+						return false;
+					})	
+
+				d3.selectAll(".pointDwell")
+					.classed("selected", function(d){
+						return false;
+					})	
+				d3.selectAll(".pointCost")
+					.classed("selected", function(d){
+						return false;
+					})	
+					
+			}
+	};
+	
+	pointsOverlaySQFT = L.d3SvgOverlay(function(sel,proj){
+		var pointsUpdSQFT = sel.selectAll('circle').data(points);
+		var maxSQFT = d3.max(points.map(function(d) { return d.sqft }));
+		var minSQFT = d3.min(points.map(function(d) { return d.sqft }));
+		//console.log(maxSQFT);
+		//console.log(minSQFT);
+		createLegend(minSQFT,maxSQFT);
+		radius = d3.scale.sqrt()
+			.domain([0, maxSQFT])
+			//.range([1, 5])
+			.range([3, 55])
+		function calcPropRadius(attributeValue) {
+			return Math.pow(attributeValue/2000,1/2)*100;
+		}
+		
+		function createLegend(minLabel, maxLabel) {
+			legendSQFT = L.control( { position: "topleft" } );
+
+			legendSQFT.onAdd = function(map) {
+				var legendContainer = L.DomUtil.create("div", "legendSQFT");
+				var symbolsContainerSQFT = L.DomUtil.create("div", "symbolsContainerSQFT");
+				var classes = [14, 174, 362];
+				var classesLegendVals = [legendNumFormat(minLabel), legendNumFormat(Math.round((maxLabel-minLabel)/2)), legendNumFormat(maxLabel)];
+				
+				var legendCircleSQFT;
+				var lastRadius = 0;
+				var currentRadius;
+				var margin;
+				
+				L.DomEvent.addListener(legendContainer, "mousedown", function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
+				
+				$(legendContainer).append("<p id='legendTitleSQFT'>Square Footage</p>");
+				
+				for (var i = 0; i <= classes.length-1; i++) {
+					legendCircleSQFT = L.DomUtil.create("div", "legendCircleSQFT");
+					currentRadius = calcPropRadius(classes[i]);
+					margin = -currentRadius - lastRadius - 2;
+					
+					$(legendCircleSQFT).attr("style", "width: " + currentRadius*2 +
+							"px; height: " + currentRadius*2 +
+							"px; margin-left: " + margin + "px" );
+					
+					$(legendCircleSQFT).append("<span class='legendValueSQFT'>"+classesLegendVals[i]+"</span>");
+					
+					$(symbolsContainerSQFT).append(legendCircleSQFT);
+					
+					lastRadius = currentRadius;
+					//console.log(classes[i]);
+				}
+				
+				$(legendContainer).append(symbolsContainerSQFT);
+				
+				return legendContainer;
+				};
+		}
+		
+		pointsUpdSQFT.enter()
+			.append('circle')		
+			.attr("bin",function(d){return d["BIN Number"]})
+			.attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
+			.attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
+			.attr('class', function(d){
+				return "pointSQFT";
+			})
+			.on('click', function(d){
+					tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
+					tooltipBox.style("visibility", "visible");
+			})
+			.on("mouseover", function(d, i){
+				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")
+				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
+				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+			})
+			.on("mouseout", function(d, i){			
+				$(this).attr("style", 	"fill: #009fff; fill-opacity: 0.5;" );
+			});
+			pointsUpdSQFT.attr("r", function(d) { return radius(d["Total Construction Floor Area"]  / proj.scale); });
+			pointsUpdSQFT.attr("stroke-width", 1 / proj.scale);
+	});
+	
+	
+	pointsOverlayPropDwell = L.d3SvgOverlay(function(sel,proj){
+		var pointsUpdPropDwell = sel.selectAll('circle').data(points);
+		var maxPropDwell = d3.max(points, function(d) { return d.propDwell; });
+		var minPropDwell = d3.min(points.map(function(d) { return d.propDwell }));
+		//console.log(maxPropDwell);
+		
+		var radius = d3.scale.sqrt()
+			.domain([0, maxPropDwell])
+			.range([3, 50])
+			
+		createLegend(minPropDwell,maxPropDwell);
+
+		function calcPropRadius(attributeValue) {
+
+			return Math.pow(attributeValue/2000,1/2)*100;
+		}
+		
+		function createLegend(minLabel, maxLabel) {
+			
+			legendPropDwell = L.control( { position: "topleft" } );
+			
+			legendPropDwell.onAdd = function(map) {
+				var legendContainerPropDwell = L.DomUtil.create("div", "legendPropDwell");
+				var symbolsContainerPropDwell = L.DomUtil.create("div", "symbolsContainerPropDwell");
+				var classes = [14, 174, 362];
+				var classesLegendVals = [legendNumFormat(minLabel), legendNumFormat(Math.round((maxLabel-minLabel)/2)), legendNumFormat(maxLabel)];
+				
+				var legendCirclePropDwell;
+				var lastRadius = 0;
+				var currentRadius;
+				var margin;
+				
+				L.DomEvent.addListener(legendContainerPropDwell, "mousedown", function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
+				
+				$(legendContainerPropDwell).append("<p id='legendTitlePropDwell'>Proposed Dwelling Units</p>");
+				
+				for (var i = 0; i <= classes.length-1; i++) {
+					legendCirclePropDwell = L.DomUtil.create("div", "legendCirclePropDwell");
+					currentRadius = calcPropRadius(classes[i]);
+					margin = -currentRadius - lastRadius - 2;
+					
+					$(legendCirclePropDwell).attr("style", "width: " + currentRadius*2 +
+							"px; height: " + currentRadius*2 +
+							"px; margin-left: " + margin + "px" );
+					
+					$(legendCirclePropDwell).append("<span class='legendValuePropDwell'>"+classesLegendVals[i]+"</span>");
+					
+					$(symbolsContainerPropDwell).append(legendCirclePropDwell);
+					
+					lastRadius = currentRadius;
+					//console.log(classes[i]);
+				}
+				
+				$(legendContainerPropDwell).append(symbolsContainerPropDwell);
+				
+				return legendContainerPropDwell;
+		
+				
+				};
+				
+		}
+			
+			
+			
+			
+		pointsUpdPropDwell.enter()
+			.append('circle')		
+			.attr("bin",function(d){return d["BIN Number"]})
+			.attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
+			.attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
+			.attr('class', function(d){
+				return "pointDwell";
+			})
+			.on('click', function(d){
+			
+				if(d3.select(this).style("fill-opacity") != 0){
+                    tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
+					tooltipBox.style("visibility", "visible");
+				}
+			})
+			.on("mouseover", function(d, i){
+				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")
+				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
+                $(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+			})
+			.on("mouseout", function(d, i){			
+				$(this).attr("style", 	"fill: #FF7F01; fill-opacity: 0.5;" );
+			})
+			pointsUpdPropDwell.attr("r", function(d) { return radius(d.propDwell  / proj.scale); });
+			pointsUpdPropDwell.attr("stroke-width", 1 / proj.scale);		
+	});
+	
+	pointsOverlayCost = L.d3SvgOverlay(function(sel,proj){
+		var pointsUpd = sel.selectAll('circle').data(points);
+		var maxCost = d3.max(points.map(function(d) { return d.estCost }));
+		var minCost = d3.min(points.map(function(d) { return d.estCost }));
+		//console.log(maxCost);
+		//console.log(minCost);
+
+		createLegend(minCost,maxCost);
+		radius = d3.scale.sqrt()
+			.domain([0, maxCost])
+			//.range([1, 5])
+			.range([3, 50])
+
+		function calcPropRadius(attributeValue) {
+			return Math.pow(attributeValue/2000,1/2)*100;
+		}
+		
+		function createLegend(minLabel, maxLabel) {
+			
+			legendCost = L.control( { position: "topleft" } );
+			
+			legendCost.onAdd = function(map) {
+				var legendContainer = L.DomUtil.create("div", "legendCost");
+				var symbolsContainerCost = L.DomUtil.create("div", "symbolsContainerCost");
+				var classes = [14, 174, 362];
+				var classesLegendVals = [legendNumFormat(minLabel), legendNumFormat(Math.round((maxLabel-minLabel)/2)), legendNumFormat(maxLabel)];
+				
+				var legendCircleCost;
+				var lastRadius = 0;
+				var currentRadius;
+				var margin;
+				
+				L.DomEvent.addListener(legendContainer, "mousedown", function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
+				
+				$(legendContainer).append("<p id='legendTitleCost'>Estimated Cost ($)</p>");
+				
+				for (var i = 0; i <= classes.length-1; i++) {
+					legendCircleCost = L.DomUtil.create("div", "legendCircleCost");
+					currentRadius = calcPropRadius(classes[i]);
+					margin = -currentRadius - lastRadius - 2;
+					
+					$(legendCircleCost).attr("style", "width: " + currentRadius*2 +
+							"px; height: " + currentRadius*2 +
+							"px; margin-left: " + margin + "px" );
+					
+					$(legendCircleCost).append("<span class='legendValueCost'>"+classesLegendVals[i]+"</span>");
+					
+					$(symbolsContainerCost).append(legendCircleCost);
+					
+					lastRadius = currentRadius;
+					//console.log(classes[i]);
+				}
+				
+				$(legendContainer).append(symbolsContainerCost);
+				
+				return legendContainer;
+		
+				
+				};
+				
+		}
+			
+		pointsUpd.enter()
+			.append('circle')		
+			.attr("bin",function(d){return d["BIN Number"]})
+			.attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
+			.attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
+			.attr('class', function(d){
+				return "pointCost";
+			})
+			.on('click', function(d){
+			
+				if(d3.select(this).style("fill-opacity") != 0){
+                    tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
+					tooltipBox.style("visibility", "visible");
+				}
+			})
+			.on("mouseover", function(d, i){
+				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")				
+				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
+				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+			})
+			.on("mouseout", function(d, i){			
+				$(this).attr("style", 	"fill: #f44336; fill-opacity: 0.5;" );
+			})
+			
+			pointsUpd.attr("r", function(d) { return radius(d.estCost  / proj.scale); });
+			pointsUpd.attr("stroke-width", 1 / proj.scale);		
+	});	
+
+	pointsOverlayStories = L.d3SvgOverlay(function(sel,proj){
+		var pointsUpd = sel.selectAll('circle').data(points);
+		var maxStories = d3.max(points.map(function(d) { return d.propStories }));
+		var minStories = d3.min(points.map(function(d) { return d.propStories }));
+		//console.log(maxStories);
+		//console.log(minStories);
+
+		createLegend(minStories,maxStories);
+		radius = d3.scale.sqrt()
+			.domain([0, maxStories])
+			//.range([1, 5])
+			.range([3, 45])
+
+		function calcPropRadius(attributeValue) {
+
+			return Math.pow(attributeValue/2000,1/2)*100;
+		}
+		
+		function createLegend(minLabel, maxLabel) {
+			
+			legendStories = L.control( { position: "topleft" } );
+			
+			legendStories.onAdd = function(map) {
+				var legendContainer = L.DomUtil.create("div", "legendStories");
+				var symbolsContainerStories = L.DomUtil.create("div", "symbolsContainerStories");
+				var classes = [14, 174, 362];
+				var classesLegendVals = [legendNumFormat(minLabel), legendNumFormat(Math.round((maxLabel-minLabel)/2)), legendNumFormat(maxLabel)];
+				
+				var legendCircleStories;
+				var lastRadius = 0;
+				var currentRadius;
+				var margin;
+				
+				L.DomEvent.addListener(legendContainer, "mousedown", function(e) {
+					L.DomEvent.stopPropagation(e);
+				});
+				
+				$(legendContainer).append("<p id='legendTitleStories'>Proposed Stories</p>");
+				
+				for (var i = 0; i <= classes.length-1; i++) {
+					legendCircleStories = L.DomUtil.create("div", "legendCircleStories");
+					currentRadius = calcPropRadius(classes[i]);
+					margin = -currentRadius - lastRadius - 2;
+					
+					$(legendCircleStories).attr("style", "width: " + currentRadius*2 +
+							"px; height: " + currentRadius*2 +
+							"px; margin-left: " + margin + "px" );
+					
+					$(legendCircleStories).append("<span class='legendValueStories'>"+classesLegendVals[i]+"</span>");
+					
+					$(symbolsContainerStories).append(legendCircleStories);
+					
+					lastRadius = currentRadius;
+					//console.log(classes[i]);
+				}
+				
+				$(legendContainer).append(symbolsContainerStories);
+				
+				return legendContainer;
+		
+				
+				};
+				
+		}
+		pointsUpd.enter()
+			.append('circle')		
+			.attr("bin",function(d){return d["BIN Number"]})
+			.attr('cx',function(d){return proj.latLngToLayerPoint(d.latLng).x;})
+			.attr('cy',function(d){return proj.latLngToLayerPoint(d.latLng).y;})
+			.attr('class', function(d){
+				return "pointStories";
+			})
+			.on('click', function(d){
+				if(d3.select(this).style("fill-opacity") != 0){
+                    tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
+					tooltipBox.style("visibility", "visible");
+				}
+
+			})
+			.on("mouseover", function(d, i){
+				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")				
+				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
+				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+			})
+			.on("mouseout", function(d, i){			
+				$(this).attr("style", 	"fill: #66A61E; fill-opacity: 0.5;" );
+			})
+			pointsUpd.attr("r", function(d) { return radius(d.propStories  / proj.scale); });
+			pointsUpd.attr("stroke-width", 1 / proj.scale);		
+	});	
+	
+    const dit=(_pl,...args)=>{
+                if (!_pl) {tooltipBox.style("visibility","hidden");console.error("Invalid key");return ""};
+                if (!args[0] && !_pl.target.className.match(/_pr|_nx|_cl/)) {return};
+                let _dX=0;
+                let _l=[];
+                let doString = (_sObject,_dX, _l)=>{
+                        let _xx='';
+                        for (let [k,v] of Object.entries(_sObject) ) {
+							let _str=()=>
+							{if (v.includes('Date')) {
+										let _sp=_l[_dX][`${v}`].split('-');
+									if (_sp[1]){
+										return ''.concat(_sp[1].padStart(2,'0'),'/',_sp[2].padStart(2,'0'),'/',_sp[0]);
+									}
+								}	else if (!!v.match(/(footage|cost|dwelling)/i)){
+										let llld= numberFormat(_l[_dX][v]);
+										return llld;
+								}
+							}
+								_xx+=`<div class="_fM3_0">
+								<div>${k}:</div>
+								<div>${_str()||_l[_dX][`${v}`]}</div>
+							</div>`;
+                        };
+						let truncor = _l[_dX]["Latitude Point"].slice(0,3).concat(_l[_dX]["Latitude Point"].slice(3,7),_l[_dX]["Longitude Point"].slice(0,4),_l[_dX]["Longitude Point"].slice(4,8));
+						return `<div class="_tD"><div class="_nav">${_dX+1} of ${_l.length}</div><div><span class="_pr" title="Previous">&#11207;</span><span class="_nx" title="Next">&#11208;</span></div><div style="font-size:17px;" title="Close" class="material-symbols-outlined _cl">close</div></div><div class="_cycleD"><span class="_cor">${truncor}</span>${_xx}</div>`;
+                    }
+                    let _sortD=(_ID) => {
+						return points.filter(_p=> _p["Latitude Point"].slice(0,3).concat(_p["Latitude Point"].slice(3,7),_p["Longitude Point"].slice(0,4),_p["Longitude Point"].slice(4,8)) ==_ID);
+                    }
+                    let _clr=()=>{
+    				tooltipBox.style("visibility", "hidden");document.querySelector(".tooltipBox").innerHTML="";
+                    document.querySelector(".tooltipBox").removeEventListener("click",dit);
+                }
+                if (!args[0]){
+                    if (_pl.target.classList.contains("_cl")) {
+                        _clr();return;
+                    }
+                    if (document.querySelector("._nav").textContent=="1 of 1"||(_pl.target.className!="_pr" && _pl.target.className!="_nx")){return};
+                    let _key=document.querySelector("._cor").innerText;
+                    _l=_sortD(_key);  if (!_l[0])   {_clr();console.error("Invalid key");return ""};
+                    let _sN =parseInt(document.querySelector("._nav").textContent?.match(/(.*?) /));
+                    if (!_sN| _sN<1||_sN>_l.length){_clr();console.error("Invalid key");return ""};
+                    if (_pl.target.className=="_pr") {
+                        if(_sN==1){_dX=_l.length-1} else {_dX=_sN-2;}
+                    }
+                    if (_pl.target.className=="_nx") {
+                        if(_sN==_l.length){_dX=0} else {_dX=_sN;}
+                    };
+                    document.querySelector(".tooltipBox").innerHTML=doString(_lObj,_dX,_l);
+                } else {
+                    _l=_sortD(_pl); 
+                    if (!_l[0]) {_clr();console.error("Invalid key");return ""};
+                    document.querySelector(".tooltipBox").removeEventListener("click",dit); 
+                    document.querySelector(".tooltipBox").addEventListener("click",dit);
+                    return doString(_lObj,_dX,_l);
+                };
+    }
+
+
+	d3.csv("https://raw.githubusercontent.com/NYCDOB/ActiveNB_A1enlargements/gh-pages/data/Active%20NB_Alt%201%20Enlargement%20Permits%20BIS%20and%20DOB%20NOW.csv",function(data){
+				//points = data.map(function(d){
+				points = data.filter(function(d) {
+					if( !isNaN(+d["Latitude Point"]) && !isNaN(+d["Longitude Point"]) ) {
+						return d;
+					}
+				}).map(function(d){
+				d.latLng = [+d["Latitude Point"],+d["Longitude Point"]];
+				d.bin = d["BIN Number"];
+				d.address = d["Job Location Street Name"].toUpperCase();
+				d.CD = d["Community Board"];
+				d.Borough = d["Borough Name"].toUpperCase();
+				d.jobNum = d["Job Number"];
+				d.block = [d.Block];
+				d.lot = [d.Lot];
+				d.jobType = d["Job Type"];
+				d.horizEnl = d["Horizontal Enlargement Flag"];
+				d.vertEnl = d["Vertical Enlargement Flag"];
+				d.issueDate = d["Permit Issuance Date"];
+				d.expDate = d["Permit Expiration Date"];
+				d.jobStatus = d["Current Job Status"];
+				d.sqft = +d["Total Construction Floor Area"];
+				d.propDwell = +d["Proposed Dwelling Units"];
+				d.propStories = d["Proposed Stories"];
+				d.estCost = +d["Estimated Job Cost"];
+				d.appName = d["Applicant Business Name"];
+			return d;
+			});
+			
+			pointsOverlaySQFT.addTo(map);
+			pointsOverlayPropDwell.addTo(map);
+			pointsOverlayCost.addTo(map);
+			pointsOverlayStories.addTo(map);
+			
+			d3.selectAll(".pointDwell").style("display", "none");
+			d3.selectAll(".pointCost").style("display", "none");
+			d3.selectAll(".pointStories").style("display", "none");
+			d3.selectAll(".pointSQFT").style("display", "block");
+			
+			legendSQFT.addTo(map);
+			legendPropDwell.addTo(map);
+			legendCost.addTo(map);
+			legendStories.addTo(map);
+			
+			d3.selectAll(".legendCost").style("display", "none");
+			d3.selectAll(".legendPropDwell").style("display", "none");
+			d3.selectAll(".legendStories").style("display", "none");
+			d3.selectAll(".legendSQFT").style("display", "block");
+			
+			
+
+		//CHARTS
+			
+			//SQUARE FOOTAGE
+			
+			//TOTAL CITYWIDE SQUARE FOOTAGE
+			var totalSQFT = d3.sum(data.map(function(d) { return d.sqft }));
+			//console.log(totalSQFT);
+			d3.select("#summary1_sqft").html(numberFormat(totalSQFT));
+			
+			//SQUARE FOOTAGE BY BOROUGH
+			
+			var nestBoroSQFT = d3.nest()
+				//.key(function(d){return d.sqft;})
+				.key(function(d){return d.Borough;}).sortKeys(d3.ascending)
+				.rollup(function(v) { 
+					return d3.sum(v, function(d) {return d.sqft});
+				})
+				.entries(data)
+				//console.log(nestBoroSQFT);
+				sqftBoroChart(nestBoroSQFT);
+				
+				
+			//TOP 5 COMMUNITY DISTRICTS
+			var nestCD = d3.nest()
+				.key(function(d) { return d.CD; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.sqft});
+				})			
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestCD);
+			sqftCDChart(nestCD);
+			
+			
+			//TOP 5 JOB SITES
+			var nestJob = d3.nest()
+				.key(function(d) { return d.address; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.sqft});
+				})
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestJob);
+			sqftJobChart(nestJob);
+			
+				
+			function sqftBoroChart(data){
+				var sqftBoroData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					sqftBoroData[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						//.options({height:75, width:400,})
+						//.color(['#009fff']);
+						.color(['#009fff']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Square Feet')
+						.axisLabelDistance(-15);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});		
+					
+					d3.select('#chart-boro-sqft svg')
+							.datum(sqftBoroData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				});
+			}
+			
+			function sqftCDChart(data){
+				var sqftBoroData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					sqftBoroData[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						//.options({height:75, width:400,})
+						.color(['#009fff']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Square Feet')
+						.axisLabelDistance(-15);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});										
+					//d3.select('#chart-cd-sqft svg')
+					d3.select('#cdsqft')
+							.datum(sqftBoroData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				});
+			}
+			
+			function sqftJobChart(data){
+				var sqftJobData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					sqftJobData[0].values.push(d)
+				})     
+								
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, left: 50})
+						.color(['#009fff']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Square Feet')
+						.axisLabelDistance(-15);
+					//chart.xAxis.axisLabel('Click Address to Highlight/Zoom to Location');
+					chart.xAxis.axisLabelDistance(10);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -35)
+							//.attr('y', -15)
+							.attr("width", 70)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif; pointer-events: auto; cursor: pointer;')
+							.html(d);
+							el.remove();
+							return d;
+						}
+
+					});	
+										
+					//d3.select('#chart-04 svg')
+					d3.select('#jobsqft')
+							.datum(sqftJobData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				},
+					function(){
+						d3.selectAll("foreignObject").on('click',
+							function(){
+								//console.log("test");
+							});
+					});
+									
+				//$(document).on("click", "#chart-04 svg", function(e) {
+				$(document).on("click", "#jobsqft", function(e) {
+					 //console.log (e);
+					 //console.log (e.target.__data__);
+					 var clickAdd = e.target.__data__;
+					 zoomToClickSQFT(clickAdd);
+					});					
+			}
+			
+
+			//PROPOSED DWELLING UNITS
+			
+			//TOTAL CITYWIDE PROPOSED DWELLING UNITS
+			var totalDwellUnits = d3.sum(data.map(function(d) { return d.propDwell }));
+			d3.select("#summary1_propdwell").html(numberFormat(totalDwellUnits));
+			//console.log(totalDwellUnits);
+					
+			//PROPOSED DWELLING BY BOROUGH
+			var nestBoroPropDwell = d3.nest()
+				.key(function(d){return d.Borough;}).sortKeys(d3.ascending)
+				.rollup(function(v) { 
+					return d3.sum(v, function(d) {return d.propDwell});
+				})
+				.entries(data)
+				//console.log(nestBoroPropDwell);
+				propDwellBoroChart(nestBoroPropDwell);
+				
+			//TOP 5 COMMUNITY DISTRICTS
+			var nestCD_propDwell = d3.nest()
+				.key(function(d) { return d.CD; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.propDwell});
+				})			
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			propDwellCDChart(nestCD_propDwell);
+			
+			//TOP 5 JOB SITES
+			var nestJob = d3.nest()
+				.key(function(d) { return d.address; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.propDwell});
+				})
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestJob);
+			propDwellJobChart(nestJob);
+
+			function propDwellBoroChart(data){
+				var propDwellData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					propDwellData[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						.color(['#FF7F01']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Dwelling Units')
+						.axisLabelDistance(-15);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});		
+
+					d3.select('#chart-boro-propDwell svg')
+							.datum(propDwellData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+
+					
+				
+					return chart;
+				});
+				
+			}		
+
+			function propDwellCDChart(data){
+				var propDwellCD_Data = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					propDwellCD_Data[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						//.options({height:75, width:400,})
+						.color(['#FF7F01']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Dwelling Units')
+						.axisLabelDistance(-15);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});										
+					//d3.select('#chart-cd-propDwell svg')
+					d3.select('#cdpropdwell')
+							.datum(propDwellCD_Data)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				});
+			}
+
+			function propDwellJobChart(data){
+				var propDwellJobData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					propDwellJobData[0].values.push(d)
+				})     
+								
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, left: 50})
+						.color(['#FF7F01']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Dwelling Units')
+						.axisLabelDistance(-15);
+
+					//chart.xAxis.axisLabel('Click Address to Highlight/Zoom to Location');
+					chart.xAxis.axisLabelDistance(10);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -35)
+							//.attr('y', -15)
+							.attr("width", 70)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif; pointer-events: auto; cursor: pointer;')
+							.html(d);
+							el.remove();
+							return d;
+						}
+
+					});	
+										
+					d3.select('#jobdwell')
+							.datum(propDwellJobData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				},
+					function(){
+						d3.selectAll("foreignObject").on('click',
+							function(){
+								//console.log("test");
+							});
+					});
+									
+				$(document).on("click", "#jobdwell", function(e) {
+					 //console.log (e);
+					 //console.log (e.target.__data__);
+					 var clickAdd = e.target.__data__;
+					 zoomToClickPropDwell(clickAdd);
+					});					
+			}	
+
+			//ESTIMATED COST
+			
+			//TOTAL CITYWIDE ESTIMATED COST
+			var totalEstCost = d3.sum(data.map(function(d) { return d.estCost }));
+			d3.select("#summary1_estcost").html(numberFormat(totalEstCost));
+			//console.log(totalEstCost);	
+
+			//ESTIMATED COST BY BOROUGH
+			var nestBoroEstCost = d3.nest()
+				.key(function(d){return d.Borough;}).sortKeys(d3.ascending)
+				.rollup(function(v) { 
+					return d3.sum(v, function(d) {return d.estCost});
+				})
+				.entries(data)
+				//console.log(nestBoroEstCost);
+				estCostBoroChart(nestBoroEstCost);	
+				
+			//TOP 5 COMMUNITY DISTRICTS
+			var nestCD_estCost = d3.nest()
+				.key(function(d) { return d.CD; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.estCost});
+				})			
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestCD_estCost);
+			estCostCDChart(nestCD_estCost);
+			
+			//TOP 5 JOB SITES
+			var nestJob_estCost = d3.nest()
+				.key(function(d) { return d.address; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.estCost});
+				})
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestJob_estCost);
+			estCostJobChart(nestJob_estCost);
+
+			function estCostBoroChart(data){
+				var estCostData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					estCostData[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						.color(['#f44336']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Estimated Cost ($)')
+						.axisLabelDistance(-12);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});		
+
+					d3.select('#chart-boro-estCost svg')
+							.datum(estCostData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+
+					
+				
+					return chart;
+				});
+				
+			}
+
+			function estCostCDChart(data){
+				var estCostCD_Data = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					estCostCD_Data[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						//.options({height:75, width:400,})
+						.color(['#f44336']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Estimated Cost ($)')
+						.axisLabelDistance(-12);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});										
+					//d3.select('#chart-cd-propDwell svg')
+					d3.select('#cdestcost')
+							.datum(estCostCD_Data)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				});
+			}	
+
+			function estCostJobChart(data){
+				var estCostJobData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					estCostJobData[0].values.push(d)
+				})     
+								
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, left: 50})
+						.color(['#f44336']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Estimated Cost ($)')
+						.axisLabelDistance(-12);
+
+					//chart.xAxis.axisLabel('Click Address to Highlight/Zoom to Location');
+					chart.xAxis.axisLabelDistance(10);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -35)
+							//.attr('y', -15)
+							.attr("width", 70)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif; pointer-events: auto; cursor: pointer;')
+							.html(d);
+							el.remove();
+							return d;
+						}
+
+					});	
+										
+					d3.select('#jobestcost')
+							.datum(estCostJobData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				},
+					function(){
+						d3.selectAll("foreignObject").on('click',
+							function(){
+								//console.log("test");
+							});
+					});
+									
+				$(document).on("click", "#jobestcost", function(e) {
+					 //console.log (e);
+					 //console.log (e.target.__data__);
+					 var clickAdd = e.target.__data__;
+					 zoomToClickEstCost(clickAdd);
+					});					
+			}	
+			
+			
+			//PROPOSED STORIES
+			
+			//TOTAL CITYWIDE PROPOSED STORIES
+			var totalStories = d3.sum(data.map(function(d) { return d.propStories }));
+			d3.select("#summary1_stories").html(numberFormat(totalStories));
+			//console.log(totalStories);	
+
+			//PROPOSED STORIES BY BOROUGH
+			var nestBoroStories = d3.nest()
+				.key(function(d){return d.Borough;}).sortKeys(d3.ascending)
+				.rollup(function(v) { 
+					return d3.sum(v, function(d) {return d.propStories});
+				})
+				.entries(data)
+				//console.log(nestBoroStories);
+				storiesBoroChart(nestBoroStories);	
+				
+			//TOP 5 COMMUNITY DISTRICTS
+			var nestCD_stories = d3.nest()
+				.key(function(d) { return d.CD; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.propStories});
+				})			
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestCD_stories);
+			storiesCDChart(nestCD_stories);
+			
+			//TOP 5 JOB SITES
+			var nestJob_stories = d3.nest()
+				.key(function(d) { return d.address; })
+				.rollup(function(v) {
+					return d3.sum(v, function(d) {return d.propStories});
+				})
+				.entries(data)
+				.sort(function(a, b){ return d3.descending(a.values, b.values); }).slice(0,5);	
+			//console.log(nestJob_stories);
+			storiesJobChart(nestJob_stories);
+
+			function storiesBoroChart(data){
+				var storiesData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					storiesData[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						.color(['#66A61E']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Proposed Stories')
+						.axisLabelDistance(-12);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});		
+
+					d3.select('#chart-boro-stories svg')
+							.datum(storiesData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+
+					
+				
+					return chart;
+				});
+				
+			}
+
+			function storiesCDChart(data){
+				var storiesCD_Data = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					storiesCD_Data[0].values.push(d)
+				})     
+				
+				
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, bottom: 20, left: 50})
+						//.options({height:75, width:400,})
+						.color(['#66A61E']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Proposed Stories')
+						.axisLabelDistance(-12);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -100)
+							.attr("width", 200)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif;')
+							//.attr('class',function(){return ((d.toLowerCase().indexOf(wod.toLowerCase())>=0)?"tWOTD":"");})
+							.html(d);    
+							el.remove();
+							return d;
+						}
+					});										
+					//d3.select('#chart-cd-propDwell svg')
+					d3.select('#cdstories')
+							.datum(storiesCD_Data)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				});
+			}	
+
+			function storiesJobChart(data){
+				var storiesJobData = [
+					{
+						key: "totals",
+						values: []
+					}
+				];
+
+				// populate the empty object with your data
+				data.forEach(function (d){
+					d.values = +d.values
+					storiesJobData[0].values.push(d)
+				})     
+								
+				nv.addGraph(function() {				
+					var chart = nv.models.discreteBarChart()
+						.x(function (d) {  
+							return d.key 
+						})
+						.y(function (d) { 
+							return d.values 
+						})
+						.duration(250)
+						.margin({top: 15, right: 10, left: 50})
+						.color(['#66A61E']);
+					chart.yAxis.tickFormat(d3.format('.2s'));
+					chart.yAxis
+						.axisLabel('Proposed Stories')
+						.axisLabelDistance(-12);
+
+					//chart.xAxis.axisLabel('Click Address to Highlight/Zoom to Location');
+					chart.xAxis.axisLabelDistance(10);
+					chart.xAxis.tickFormat(function(d){
+						if (typeof this != 'undefined') {
+						 var el = d3.select(this);
+						 var p = d3.select(this.parentNode);
+						 p.append("foreignObject")
+							.attr('x', -35)
+							//.attr('y', -15)
+							.attr("width", 70)
+							.attr("height", 200)
+							.append("xhtml:p")
+							.attr('style','word-wrap: break-word; text-align:center; font: normal 10px sans-serif; pointer-events: auto; cursor: pointer;')
+							.html(d);
+							el.remove();
+							return d;
+						}
+
+					});	
+										
+					d3.select('#jobstories')
+							.datum(storiesJobData)
+							.transition().duration(250)
+							.call(chart);
+					nv.utils.windowResize(chart.update);
+					return chart;
+				},
+					function(){
+						d3.selectAll("foreignObject").on('click',
+							function(){
+								//console.log("test");
+							});
+					});
+									
+				$(document).on("click", "#jobstories", function(e) {
+					 //console.log (e);
+					 //console.log (e.target.__data__);
+					 var clickAdd = e.target.__data__;
+					 zoomToClickStories(clickAdd);
+					});					
+			}	
+	});	//end d3.csv()
+} //end ready()
+
+
+
+
+	function zoomToClickSQFT(add){
+		//console.log(add);
+		d3.selectAll(".pointSQFT")
+			.style("fill", function(d){
+				if(d.address == add){return "#eef442"}
+				else{return "#009fff"};
+			})
+			.classed("selected", function(d){
+				if(d.address == add){return true}
+				else{return false};
+			})
+
+		var clickCoordinatesSQFT = d3.selectAll(".selected").data()[0].latLng; //GET A COLUMN VALUE FROM SELECTED
+		//console.log(clickCoordinatesSQFT);
+		zoomToSelectedG(clickCoordinatesSQFT);
+
+	}
+	
+	function zoomToClickPropDwell(add){
+		//console.log(add);
+		d3.selectAll(".pointDwell")
+			.style("fill", function(d){
+				if(d.address == add){return "#eef442"}
+				else{return "#FF7F01"};
+			})
+			.classed("selected", function(d){
+				if(d.address == add){return true}
+				else{return false};
+			})
+
+		var clickCoordinatesDwell = d3.selectAll(".selected").data()[0].latLng; //GET A COLUMN VALUE FROM SELECTED
+		//console.log(clickCoordinatesDwell);
+		zoomToSelectedG(clickCoordinatesDwell);
+
+	}
+	
+	function zoomToClickEstCost(add){
+		//console.log(add);
+		d3.selectAll(".pointCost")
+			.style("fill", function(d){
+				if(d.address == add){return "#eef442"}
+				else{return "#f44336"};
+			})
+			.classed("selected", function(d){
+				if(d.address == add){return true}
+				else{return false};
+			})
+
+		var clickCoordinatesCost = d3.selectAll(".selected").data()[0].latLng; //GET A COLUMN VALUE FROM SELECTED
+		//console.log(clickCoordinatesCost);
+		zoomToSelectedG(clickCoordinatesCost);
+
+	}
+
+	function zoomToClickStories(add){
+		//console.log(add);
+		d3.selectAll(".pointStories")
+			.style("fill", function(d){
+				if(d.address == add){return "#eef442"}
+				else{return "#66A61E"};
+			})
+			.classed("selected", function(d){
+				if(d.address == add){return true}
+				else{return false};
+			})
+
+		var clickCoordinatesStories = d3.selectAll(".selected").data()[0].latLng; //GET A COLUMN VALUE FROM SELECTED
+		//console.log(clickCoordinatesStories);
+		zoomToSelectedG(clickCoordinatesStories);
+
+	}
+
+	function zoomToSelectedG(latlong){
+		tooltipBox[0][0].style.visibility='hidden';
+		map.setView(latlong,17);
+	}	
+	map.on('resize', function(){
+		map.invalidateSize();		
+	});
+	
+	
+	
+	$('#dlData').click(function(e) {
+		e.preventDefault();  //stop the browser from following
+		// window.location.href = 'data/Active NB_Alt 1 Enlargement Permits BIS and DOB NOW.csv';
+		window.location.href = 'https://nycdob.github.io/ActiveNB_A1enlargements/data/Active NB_Alt 1 Enlargement Permits BIS and DOB NOW.csv';
+	});
+	
+});	
+</script>
+</body>
+</html>
