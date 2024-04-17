@@ -746,7 +746,7 @@ function ready(){
 		dwellRadio = document.querySelector('input[id="dwell"]');
 		costRadio = document.querySelector('input[id="cost"]');
 		storiesRadio = document.querySelector('input[id="stories"]');
-		let _lObj={"Job Type":"Job Type","Job Number":"Job Number","BIN":"BIN Number","Address":"Job Location Street Name","Block":"Block","Lot":"Lot","Community District":"Community Board","Horizontal Enlargement":"Horizontal Enlargement Flag","Vertical Enlargement":"Vertical Enlargement Flag","Square Footage":"Total Construction Floor Area",  "Proposed Dwelling Units":"Proposed Dwelling Units","Proposed Stories":"Proposed Stories","Estimate Cost ($)":"Estimated Job Cost","Applicant Business Name":"Applicant Business Name","Permit Issuance Date":"Permit Issuance Date","Permit Expiration Date":"Permit Expiration Date",}
+		let _lObj={"Job Type":"Job Type","Job Number":"Job Number","BIN":"BIN Number","Address":"Job Location Street Name","Block":"Block","Lot":"Lot","Community District":"Community Board","Horizontal Enlargement":"Horizontal Enlargement Flag","Vertical Enlargement":"Vertical Enlargement Flag","Square Footage":"Total Construction Floor Area","Proposed Dwelling Units":"Proposed Dwelling Units","Proposed Stories":"Proposed Stories","Estimate Cost ($)":"Estimated Job Cost","Applicant Business Name":"Applicant Business Name","Permit Issuance Date":"Permit Issuance Date","Permit Expiration Date":"Permit Expiration Date",}
 
 
 	sqftRadio.onchange = function(){
@@ -1327,7 +1327,7 @@ function ready(){
 					if (_sp[1]){
 						return ''.concat(_sp[1].padStart(2,'0'),'/',_sp[2].padStart(2,'0'),'/',_sp[0]);
 					}
-				}	else if (!!v.match(/(footage|cost|dwelling)/i)){
+				}	else if (!!v.match(/(area|footage|cost|dwelling)/i)){
 						let llld= numberFormat(_l[_dX][v]);
 						return llld;
 				}
