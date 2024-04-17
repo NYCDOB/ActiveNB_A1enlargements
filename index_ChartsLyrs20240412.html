@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
   <link href="https://nycdob.github.io/ActiveNB_A1enlargements/build/nv.d3.css" rel="stylesheet" type="text/css">
   <style>
-
 .row{
 	padding-top: 50px;
 }
@@ -728,8 +727,6 @@ var tooltipBox = d3.select('#map').append('div').attr('class', 'tooltipBox');
 var width = $("#map").width(),
 	height = $("#map").height(),
 	points = [],
-	table_map = [],
-	filteredData,
 	latLngs = [],
 	pointsOverlaySQFT,
 	pointsOverlayDwell,
@@ -739,8 +736,7 @@ var width = $("#map").width(),
 	legendPropDwell,
 	legendCost,
 	legendStories,
-	radius;
-	
+	radius;	
 onload = ready();
 
 	
@@ -751,7 +747,6 @@ function ready(){
 		costRadio = document.querySelector('input[id="cost"]');
 		storiesRadio = document.querySelector('input[id="stories"]');
 		let _lObj={"Job Type":"Job Type","Job Number":"Job Number","BIN":"BIN Number","Address":"Job Location Street Name","Block":"Block","Lot":"Lot","Community District":"Community Board","Horizontal Enlargement":"Horizontal Enlargement Flag","Vertical Enlargement":"Vertical Enlargement Flag","Square Footage":"Total Construction Floor Area",  "Proposed Dwelling Units":"Proposed Dwelling Units","Proposed Stories":"Proposed Stories","Estimate Cost ($)":"Estimated Job Cost","Applicant Business Name":"Applicant Business Name","Permit Issuance Date":"Permit Issuance Date","Permit Expiration Date":"Permit Expiration Date",}
-	//document.querySelectorAll("input[type='radio']").forEach(x=>{x.addEventListener ('change',(e)=>{document.querySelector('.tooltipBox').style.visibility="hidden"})});
 
 
 	sqftRadio.onchange = function(){
@@ -760,6 +755,7 @@ function ready(){
 				d3.selectAll(".pointCost").style("display", "none");
 				d3.selectAll(".pointStories").style("display", "none");
 				d3.selectAll(".pointSQFT").style("display", "block");	
+				d3.selectAll("circle.pointSQFT").style("fill","#009fff");
 
 				d3.selectAll(".legendSQFT").style("display", "block");
 				d3.selectAll(".legendPropDwell").style("display", "none");
@@ -812,6 +808,7 @@ function ready(){
 				d3.selectAll(".pointCost").style("display", "none");
 				d3.selectAll(".pointStories").style("display", "none");
 				d3.selectAll(".pointDwell").style("display", "block");	
+				d3.selectAll("circle.pointDwell").style("fill","#FF7F01"); 
 
 				d3.selectAll(".legendSQFT").style("display", "none");
 				d3.selectAll(".legendCost").style("display", "none");
@@ -860,6 +857,7 @@ function ready(){
 	costRadio.onchange = function(){
 			if(this.checked){
 				d3.selectAll(".pointSQFT").style("display", "none");
+				d3.selectAll("circle.pointCost").style("fill","#f44336");	
 				d3.selectAll(".pointCost").style("display", "block");
 				d3.selectAll(".pointDwell").style("display", "none");
 				d3.selectAll(".pointStories").style("display", "none");	
@@ -914,6 +912,7 @@ function ready(){
 				d3.selectAll(".pointSQFT").style("display", "none");
 				d3.selectAll(".pointCost").style("display", "none");
 				d3.selectAll(".pointDwell").style("display", "none");
+				d3.selectAll("circle.pointStories").style("fill","#66A61E");
 				d3.selectAll(".pointStories").style("display", "block");	
 
 				d3.selectAll(".legendSQFT").style("display", "none");
@@ -1032,9 +1031,7 @@ function ready(){
 					tooltipBox.style("visibility", "visible");
 			})
 			.on("mouseover", function(d, i){
-				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")
-				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
-				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+				_mOver($(this));		
 			})
 			.on("mouseout", function(d, i){			
 				$(this).attr("style", 	"fill: #009fff; fill-opacity: 0.5;" );
@@ -1042,7 +1039,6 @@ function ready(){
 			pointsUpdSQFT.attr("r", function(d) { return radius(d["Total Construction Floor Area"]  / proj.scale); });
 			pointsUpdSQFT.attr("stroke-width", 1 / proj.scale);
 	});
-	
 	
 	pointsOverlayPropDwell = L.d3SvgOverlay(function(sel,proj){
 		var pointsUpdPropDwell = sel.selectAll('circle').data(points);
@@ -1120,16 +1116,13 @@ function ready(){
 				return "pointDwell";
 			})
 			.on('click', function(d){
-			
 				if(d3.select(this).style("fill-opacity") != 0){
                     tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
 					tooltipBox.style("visibility", "visible");
 				}
 			})
 			.on("mouseover", function(d, i){
-				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")
-				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
-                $(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+				_mOver($(this));		
 			})
 			.on("mouseout", function(d, i){			
 				$(this).attr("style", 	"fill: #FF7F01; fill-opacity: 0.5;" );
@@ -1211,16 +1204,13 @@ function ready(){
 				return "pointCost";
 			})
 			.on('click', function(d){
-			
 				if(d3.select(this).style("fill-opacity") != 0){
                     tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
 					tooltipBox.style("visibility", "visible");
 				}
 			})
 			.on("mouseover", function(d, i){
-				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")				
-				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
-				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+				_mOver($(this));		
 			})
 			.on("mouseout", function(d, i){			
 				$(this).attr("style", 	"fill: #f44336; fill-opacity: 0.5;" );
@@ -1307,12 +1297,9 @@ function ready(){
                     tooltipBox.html(dit( (d["Latitude Point"].slice(0,3)).concat(d["Latitude Point"].slice(3,7),d["Longitude Point"].slice(0,4),d["Longitude Point"].slice(4,8)),1));
 					tooltipBox.style("visibility", "visible");
 				}
-
 			})
 			.on("mouseover", function(d, i){
-				let mee=document.querySelector("circle[style*='rgb(238, 244, 66)']") ||document.querySelector("circle[style*='#eef442']")				
-				mee && (mee.style.fill = getComputedStyle($(this).siblings()[0]).fill);
-				$(this).attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+				_mOver($(this));
 			})
 			.on("mouseout", function(d, i){			
 				$(this).attr("style", 	"fill: #66A61E; fill-opacity: 0.5;" );
@@ -1320,64 +1307,66 @@ function ready(){
 			pointsUpd.attr("r", function(d) { return radius(d.propStories  / proj.scale); });
 			pointsUpd.attr("stroke-width", 1 / proj.scale);		
 	});	
-	
+
+	const _mOver=(_var)=>{
+				let _sel=document.querySelector("circle[style*='rgb(238, 244, 66)'][class*='"+_var[0].className.baseVal+"']")||document.querySelector("circle[style*='#eef442'][class*='"+_var[0].className.baseVal+"']");
+				!!_sel && (_sel.style.fill = getComputedStyle(_var.siblings()[0]).fill) && _sel.classList.remove("selected");
+				_var.attr("style", "cursor: pointer; fill: #eef442; fill-opacity: 0.5;");			
+	}
     const dit=(_pl,...args)=>{
-                if (!_pl) {tooltipBox.style("visibility","hidden");console.error("Invalid key");return ""};
-                if (!args[0] && !_pl.target.className.match(/_pr|_nx|_cl/)) {return};
-                let _dX=0;
-                let _l=[];
-                let doString = (_sObject,_dX, _l)=>{
-                        let _xx='';
-                        for (let [k,v] of Object.entries(_sObject) ) {
-							let _str=()=>
-							{if (v.includes('Date')) {
-										let _sp=_l[_dX][`${v}`].split('-');
-									if (_sp[1]){
-										return ''.concat(_sp[1].padStart(2,'0'),'/',_sp[2].padStart(2,'0'),'/',_sp[0]);
-									}
-								}	else if (!!v.match(/(footage|cost|dwelling)/i)){
-										let llld= numberFormat(_l[_dX][v]);
-										return llld;
-								}
-							}
-								_xx+=`<div class="_fM3_0">
-								<div>${k}:</div>
-								<div>${_str()||_l[_dX][`${v}`]}</div>
-							</div>`;
-                        };
-						let truncor = _l[_dX]["Latitude Point"].slice(0,3).concat(_l[_dX]["Latitude Point"].slice(3,7),_l[_dX]["Longitude Point"].slice(0,4),_l[_dX]["Longitude Point"].slice(4,8));
-						return `<div class="_tD"><div class="_nav">${_dX+1} of ${_l.length}</div><div><span class="_pr" title="Previous">&#11207;</span><span class="_nx" title="Next">&#11208;</span></div><div style="font-size:17px;" title="Close" class="material-symbols-outlined _cl">close</div></div><div class="_cycleD"><span class="_cor">${truncor}</span>${_xx}</div>`;
-                    }
-                    let _sortD=(_ID) => {
-						return points.filter(_p=> _p["Latitude Point"].slice(0,3).concat(_p["Latitude Point"].slice(3,7),_p["Longitude Point"].slice(0,4),_p["Longitude Point"].slice(4,8)) ==_ID);
-                    }
-                    let _clr=()=>{
-    				tooltipBox.style("visibility", "hidden");document.querySelector(".tooltipBox").innerHTML="";
-                    document.querySelector(".tooltipBox").removeEventListener("click",dit);
-                }
-                if (!args[0]){
-                    if (_pl.target.classList.contains("_cl")) {
-                        _clr();return;
-                    }
-                    if (document.querySelector("._nav").textContent=="1 of 1"||(_pl.target.className!="_pr" && _pl.target.className!="_nx")){return};
-                    let _key=document.querySelector("._cor").innerText;
-                    _l=_sortD(_key);  if (!_l[0])   {_clr();console.error("Invalid key");return ""};
-                    let _sN =parseInt(document.querySelector("._nav").textContent?.match(/(.*?) /));
-                    if (!_sN| _sN<1||_sN>_l.length){_clr();console.error("Invalid key");return ""};
-                    if (_pl.target.className=="_pr") {
-                        if(_sN==1){_dX=_l.length-1} else {_dX=_sN-2;}
-                    }
-                    if (_pl.target.className=="_nx") {
-                        if(_sN==_l.length){_dX=0} else {_dX=_sN;}
-                    };
-                    document.querySelector(".tooltipBox").innerHTML=doString(_lObj,_dX,_l);
-                } else {
-                    _l=_sortD(_pl); 
-                    if (!_l[0]) {_clr();console.error("Invalid key");return ""};
-                    document.querySelector(".tooltipBox").removeEventListener("click",dit); 
-                    document.querySelector(".tooltipBox").addEventListener("click",dit);
-                    return doString(_lObj,_dX,_l);
-                };
+		if (!_pl) {tooltipBox.style("visibility","hidden");console.error("Invalid key");return ""};
+		if (!args[0] && !_pl.target.className.match(/_pr|_nx|_cl/)) {return};
+		let _dX=0;
+		let _l=[];
+		let doString = (_sObject,_dX, _l)=>{
+			let _xx='';
+			for (let [k,v] of Object.entries(_sObject) ) {
+				let _str=()=>
+				{if (v.includes('Date')) {
+					let _sp=_l[_dX][`${v}`].split('-');
+					if (_sp[1]){
+						return ''.concat(_sp[1].padStart(2,'0'),'/',_sp[2].padStart(2,'0'),'/',_sp[0]);
+					}
+				}	else if (!!v.match(/(footage|cost|dwelling)/i)){
+						let llld= numberFormat(_l[_dX][v]);
+						return llld;
+				}
+				}
+				_xx+=`<div class="_fM3_0"><div>${k}:</div><div>${_str()||_l[_dX][`${v}`]}</div></div>`;
+			};
+			let truncor = _l[_dX]["Latitude Point"].slice(0,3).concat(_l[_dX]["Latitude Point"].slice(3,7),_l[_dX]["Longitude Point"].slice(0,4),_l[_dX]["Longitude Point"].slice(4,8));
+			return `<div class="_tD"><div class="_nav">${_dX+1} of ${_l.length}</div><div><span class="_pr" title="Previous">&#11207;</span><span class="_nx" title="Next">&#11208;</span></div><div style="font-size:17px;" title="Close" class="material-symbols-outlined _cl">close</div></div><div class="_cycleD"><span class="_cor">${truncor}</span>${_xx}</div>`;
+			}
+			let _sortD=(_ID) => {
+				return points.filter(_p=> _p["Latitude Point"].slice(0,3).concat(_p["Latitude Point"].slice(3,7),_p["Longitude Point"].slice(0,4),_p["Longitude Point"].slice(4,8)) ==_ID);
+			}
+			let _clr=()=>{
+			tooltipBox.style("visibility", "hidden");document.querySelector(".tooltipBox").innerHTML="";
+			document.querySelector(".tooltipBox").removeEventListener("click",dit);
+		}
+		if (!args[0]){
+			if (_pl.target.classList.contains("_cl")) {
+				_clr();return;
+			}
+			if (document.querySelector("._nav").textContent=="1 of 1"||(_pl.target.className!="_pr" && _pl.target.className!="_nx")){return};
+			let _key=document.querySelector("._cor").innerText;
+			_l=_sortD(_key);  if (!_l[0])   {_clr();console.error("Invalid key");return ""};
+			let _sN =parseInt(document.querySelector("._nav").textContent?.match(/(.*?) /));
+			if (!_sN| _sN<1||_sN>_l.length){_clr();console.error("Invalid key");return ""};
+			if (_pl.target.className=="_pr") {
+				if(_sN==1){_dX=_l.length-1} else {_dX=_sN-2;}
+			}
+			if (_pl.target.className=="_nx") {
+				if(_sN==_l.length){_dX=0} else {_dX=_sN;}
+			};
+			document.querySelector(".tooltipBox").innerHTML=doString(_lObj,_dX,_l);
+		} else {
+			_l=_sortD(_pl); 
+			if (!_l[0]) {_clr();console.error("Invalid key");return ""};
+			document.querySelector(".tooltipBox").removeEventListener("click",dit); 
+			document.querySelector(".tooltipBox").addEventListener("click",dit);
+			return doString(_lObj,_dX,_l);
+		};
     }
 
 
@@ -2350,8 +2339,8 @@ function ready(){
 					 zoomToClickStories(clickAdd);
 					});					
 			}	
-	});	//end d3.csv()
-} //end ready()
+	});
+}
 
 
 
